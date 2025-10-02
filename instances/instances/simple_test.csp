@@ -1,0 +1,15 @@
+# Simple test CSP
+# Variables: 2, Domain size: 2
+# Constraints: 1
+
+2
+
+# Variable domains (variable_id min_value max_value)
+0 1 2
+1 1 2
+
+1
+
+# Constraints (var1 var2 (value1,value2) (value3,value4) ...)
+0 1 (1,1) (2,2)
+

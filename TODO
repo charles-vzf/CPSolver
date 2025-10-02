@@ -1,0 +1,46 @@
+-- TODO
+améliore @queen_benchmark.ipynb pour egalement tester ces paramètres -v et -w en combinant toutes les possibilités dans les configurations.
+Lance que jusqu'à n=6 pour tester et update les graphes avec toutes les configurations (2*2*3*3 si le compte est bon)
+
+
+
+tester plusieurs cas, bien vérifier tout le code et les résultats en comparant gurobi/solver sur plusieurs instances un peu plus sophistiquées.
+
+check des elements:
+backtrack
+arc-continuité
+look ahead/forward checking
+strategie choix variable/valeur
+déclancher AC-3 dans l arbre de recherche (simplifier avec les 2 parmètres actuels pour AC-3 initial, vrmt utile?)
+
+visualisations arc consistance
+
+backjump à implémenter
+learning via no good
+
+faire la traduction des problèmes et résoudre avec le solver puis afficher les résultats dans notebooks
+
+colorabilité carte
+carré magique/sudoku
+cavalier d euler
+regle de coulomb
+
+
+--
+extensions possibles:
+dual encoding
+traducteur contraintes en intensions en contraintes en extensions
+csp non binaires à binariser
+dual encoding: faire le lien entre paires de contraintes sur des variables en commun
+
+
+
+--
+rapport:
+choix langage, choix des algos, difficultés, choix perso sur le solver
+verif bugs, torture tests
+complexités en fonction des problèmes
+
+--
+ppt: 
+beamer: figures, graphs, performances, comparaison littérature
