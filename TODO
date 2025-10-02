@@ -1,8 +1,6 @@
 -- TODO
-améliore @queen_benchmark.ipynb pour egalement tester ces paramètres -v et -w en combinant toutes les possibilités dans les configurations.
-Lance que jusqu'à n=6 pour tester et update les graphes avec toutes les configurations (2*2*3*3 si le compte est bon)
-
-
+améliorer @queen_benchmark.ipynb pour egalement tester les paramètres -v et -w en combinant toutes les possibilités dans les configurations.
+Lancer que jusqu'à n=6 pour tester et update les graphes avec toutes les configurations (2*2*3*3)
 
 tester plusieurs cas, bien vérifier tout le code et les résultats en comparant gurobi/solver sur plusieurs instances un peu plus sophistiquées.
 
@@ -15,11 +13,11 @@ déclancher AC-3 dans l arbre de recherche (simplifier avec les 2 parmètres act
 
 visualisations arc consistance
 
-backjump à implémenter
-learning via no good
+**backjump à implémenter**
+**learning via no good**
 
-faire la traduction des problèmes et résoudre avec le solver puis afficher les résultats dans notebooks
 
+faire la traduction des problèmes et résoudre avec le solver puis afficher les résultats dans notebooks:
 colorabilité carte
 carré magique/sudoku
 cavalier d euler
@@ -32,7 +30,6 @@ dual encoding
 traducteur contraintes en intensions en contraintes en extensions
 csp non binaires à binariser
 dual encoding: faire le lien entre paires de contraintes sur des variables en commun
-
 
 
 --

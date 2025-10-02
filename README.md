@@ -109,14 +109,6 @@ Solution files follow the DIMACS CSP solution format and contain one or more val
 0=3 1=3 2=3 3=3
 ```
 
-### Solution Format Structure
-
-1. **Header Comments**: Instance metadata and solution count
-2. **Resolution Parameters**: Solver performance metrics
-   - `Number of nodes`: Nodes explored in the search tree
-   - `Relative gap`: Optimality gap (0.0 for optimal solutions)
-3. **Solutions**: Each solution as `variable_id=value` assignments
-
 ## Usage
 
 ### Using the Gurobi Solver (Julia)
@@ -197,8 +189,8 @@ Use the `validate_sol.ipynb` notebook to validate solution files against their c
 ```
 CPSolver/
 ├── README.md
-├── gurobi_guard.ipynb      # Main Gurobi solver implementation
 ├── instances/
+│   ├── gurobi_guard.ipynb  # Gurobi solver implementation to find solutions as a reference
 │   ├── description.md      # DIMACS CSP format documentation
 │   ├── generator.ipynb     # Instance generator notebook
 │   └── instances/          # Instance files (.csp)
@@ -206,12 +198,17 @@ CPSolver/
 │   ├── description.md      # Solution format documentation
 │   ├── validate_sol.ipynb  # Solution validation notebook
 │   └── solutions/          # Solution files (.sol)
-└── [other solver files...]
+└── Solver/
+    ├── README.md           # Solver documentation
+    ├── main.cpp            # Main solver implementation
+    ├── Makefile            # Solver Makefile
+    ├── solve_all.sh        # Solver script to solve all instances
+    └── src/                # Solver source code
 ```
 
 ## Development
 
-This project was developed as part of the Constraint Programming course at UTC, focusing on:
+This project was developed as part of the Constraint Programming course at MPRO, focusing on:
 - Backtracking algorithms
 - Arc consistency techniques
 - Look-ahead and look-back methods
@@ -219,4 +216,4 @@ This project was developed as part of the Constraint Programming course at UTC, 
 
 ## License
 
-This project is developed for educational purposes as part of the UTC Master's program in Operations Research.
+This project is developed for educational purposes as part of the MPRO Master's program in Operations Research.
