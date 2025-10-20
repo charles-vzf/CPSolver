@@ -15,36 +15,18 @@
 # ┌─────────────────────────────────────────────────────────────────────────────┐
 # │                              SOLVER STATISTICS                              │
 # └─────────────────────────────────────────────────────────────────────────────┘
-# Generated on: 2025-10-20 21:18:08
-# Variables: 5
-# Constraints: 30
-# Domain size: 5
-# Solutions found: 10
-# Resolution status: All solutions found
-# Nodes explored: 220
-# Solving time: 2ms
+# Generated on: 2025-10-14 11:18:43
+# Variables: 8
+# Constraints: 84
+# Domain size: 8
+# Solutions found: 1
+# Resolution status: First solution found
+# Nodes explored: 33
+# Solving time: 4ms
 # Variable strategy: mrv
 # Value strategy: lcv
 # AC-3: Enabled
-# Forward checking: Disabled
+# Forward checking: Enabled
 #
 # Solution 1
-0=1 1=3 2=5 3=2 4=4
-# Solution 2
-0=1 1=4 2=2 3=5 4=3
-# Solution 3
-0=2 1=5 2=3 3=1 4=4
-# Solution 4
-0=2 1=4 2=1 3=3 4=5
-# Solution 5
-0=3 1=1 2=4 3=2 4=5
-# Solution 6
-0=3 1=5 2=2 3=4 4=1
-# Solution 7
-0=4 1=1 2=3 3=5 4=2
-# Solution 8
-0=4 1=2 2=5 3=3 4=1
-# Solution 9
-0=5 1=2 2=4 3=1 4=3
-# Solution 10
-0=5 1=3 2=1 3=4 4=2
+0=1 1=6 2=8 3=3 4=7 5=4 6=2 7=5

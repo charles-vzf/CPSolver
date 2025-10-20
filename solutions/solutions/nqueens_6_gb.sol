@@ -3,7 +3,7 @@
 # Number of solutions found: 4
 
 # Resolution parameters:
-# Gurobi time: 0.0081 seconds
+# Gurobi time: 0.008 seconds
 # Number of nodes: 1
 # Relative gap: 0.0
 

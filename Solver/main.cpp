@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <memory>
 #include <cstdlib> // For system()
-#include <sys/resource.h> // For memory usage
+// #include <sys/resource.h> // For memory usage
 
 // Custom headers
 #include "src/parser/parser.h"
@@ -24,11 +24,13 @@
 using namespace std;
 
 // Function to get current memory usage in MB
+/*
 long getMemoryUsage() {
     struct rusage usage;
     getrusage(RUSAGE_SELF, &usage);
     return usage.ru_maxrss / 1024; // Convert to MB
 }
+*/
 
 // Function to count lines in a file
 int countFileLines(const string& filename) {
