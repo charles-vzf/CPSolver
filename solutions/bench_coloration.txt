@@ -1,0 +1,59 @@
+          instance    k                status  solutions_found  solving_time_ms  nodes_explored
+0              anna   11  First solution found              1.0           1445.0           138.0
+1             david   11  First solution found              1.0            537.0            87.0
+2    fpsol2.i.1.csp   65               timeout              NaN              NaN             NaN
+3    fpsol2.i.2.csp   30               timeout              NaN              NaN             NaN
+4    fpsol2.i.3.csp   30               timeout              NaN              NaN             NaN
+5          games120    9  First solution found              1.0           2091.0           120.0
+6             homer   13               Timeout              0.0           5295.0           212.0
+7              huck   11  First solution found              1.0            370.0            74.0
+8    inithx.i.1.csp   54               timeout              NaN              NaN             NaN
+9    inithx.i.2.csp   31               timeout              NaN              NaN             NaN
+10   inithx.i.3.csp   31               timeout              NaN              NaN             NaN
+11             jean   10  First solution found              1.0            257.0            80.0
+12        le450_15a   15               Timeout              0.0           5385.0            42.0
+13        le450_15b   15               Timeout              0.0           6676.0            54.0
+14    le450_15c.csp   15               timeout              NaN              NaN             NaN
+15    le450_15d.csp   15               timeout              NaN              NaN             NaN
+16        le450_25a   25               Timeout              0.0           5416.0            49.0
+17        le450_25b   25               Timeout              0.0           5608.0            49.0
+18    le450_25c.csp   25               timeout              NaN              NaN             NaN
+19    le450_25d.csp   25               timeout              NaN              NaN             NaN
+20         le450_5a    5               Timeout              0.0           5177.0            45.0
+21         le450_5b    5               Timeout              0.0           5128.0            43.0
+22         le450_5c    5               Timeout              0.0           5640.0            18.0
+23         le450_5d    5               Timeout              0.0           5488.0            22.0
+24    miles1000.csp   42               timeout              NaN              NaN             NaN
+25    miles1500.csp   73               timeout              NaN              NaN             NaN
+26         miles250    8  First solution found              1.0            718.0           128.0
+27         miles500   20               Timeout              0.0           5224.0           390.0
+28         miles750   31               Timeout              0.0           6033.0           171.0
+29   mulsol.i.1.csp   49               timeout              NaN              NaN             NaN
+30       mulsol.i.2   31               Timeout              0.0           6262.0           171.0
+31       mulsol.i.3   31               Timeout              0.0           6351.0           171.0
+32       mulsol.i.4   31               Timeout              0.0           6346.0           145.0
+33       mulsol.i.5   31               Timeout              0.0           6435.0           171.0
+34          myciel2    1         Parsing Error              0.0              0.0             0.0
+35          myciel3    4  First solution found              1.0              0.0            11.0
+36          myciel4    5  First solution found              1.0              2.0            23.0
+37          myciel5    6  First solution found              1.0             21.0            47.0
+38          myciel6    7  First solution found              1.0            333.0            95.0
+39          myciel7    8               Timeout              0.0           5092.0           542.0
+40   queen10_10.csp   71               timeout              NaN              NaN             NaN
+41       queen11_11   11               Timeout              0.0           5071.0           115.0
+42   queen12_12.csp   87               timeout              NaN              NaN             NaN
+43       queen13_13   13               Timeout              0.0           5704.0            55.0
+44   queen14_14.csp  103               timeout              NaN              NaN             NaN
+45   queen15_15.csp  113               timeout              NaN              NaN             NaN
+46   queen16_16.csp  119               timeout              NaN              NaN             NaN
+47         queen5_5    5  First solution found              1.0             13.0            25.0
+48         queen6_6    7  First solution found              1.0           1964.0           867.0
+49         queen7_7    7  First solution found              1.0            616.0           123.0
+50        queen8_12   12               Timeout              0.0           5080.0           249.0
+51         queen8_8    9               Timeout              0.0           5010.0           592.0
+52         queen9_9   10               Timeout              0.0           5064.0           320.0
+53      school1.csp  283               timeout              NaN              NaN             NaN
+54  school1_nsh.csp  233               timeout              NaN              NaN             NaN
+55   zeroin.i.1.csp   49               timeout              NaN              NaN             NaN
+56       zeroin.i.2   30               Timeout              0.0           6583.0           189.0
+57       zeroin.i.3   30               Timeout              0.0           6888.0           189.0

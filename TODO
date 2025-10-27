@@ -1,8 +1,10 @@
 -- TODO
+représentation du CSP
 améliorer @queen_benchmark.ipynb pour egalement tester les paramètres -v et -w en combinant toutes les possibilités dans les configurations.
 Lancer que jusqu'à n=6 pour tester et update les graphes avec toutes les configurations (2*2*3*3)
 
-tester plusieurs cas, bien vérifier tout le code et les résultats en comparant gurobi/solver sur plusieurs instances un peu plus sophistiquées.
+tester plusieurs cas, bien vérifier tout le code et les résultats en comparant gurobi/solver sur plusieurs instances
+un peu plus sophistiquées.
 
 check des elements:
 backtrack

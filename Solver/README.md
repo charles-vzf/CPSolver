@@ -1,174 +1,183 @@
 # CPSolver - Constraint Satisfaction Problem Solver
 
-Un solveur de problèmes de satisfaction de contraintes (CSP) implémenté en C++ avec support du format DIMACS. Ce solveur utilise des algorithmes avancés de propagation de contraintes et des stratégies heuristiques pour résoudre efficacement les instances CSP.
+A Constraint Satisfaction Problem (CSP) solver implemented in C++ with support for the DIMACS format. This solver uses advanced constraint propagation algorithms and heuristic strategies to efficiently solve CSP instances.
 
-## Architecture du projet
+## Project Architecture
 
 ```
 Solver/
-├── main.cpp                    # Point d'entrée principal avec gestion des arguments
-├── Makefile                    # Configuration de compilation
-├── README.md                   # Documentation complète
-├── solve_all.sh               # Script de résolution en lot
-├── trace_solve_all.txt        # Logs de résolution
-└── src/                        # Code source modulaire
-    ├── core/                   # Structures et paramètres
-    │   └── params.h           # Configuration du solveur
-    ├── parser/                 # Analyse des fichiers CSP
-    │   ├── parser.h           # Interface de parsing DIMACS
-    │   └── parser.cpp         # Implémentation du parser
-    ├── solver/                 # Logique principale du solveur
-    │   ├── solver.h           # Classe CSPSolver principale
-    │   └── solver.cpp         # Algorithme de backtracking
-    ├── algorithms/             # Algorithmes de consistance
-    │   ├── ac3.h              # Interface AC-3
-    │   └── ac3.cpp            # Implémentation AC-3
-    ├── strategies/             # Stratégies de sélection
-    │   ├── strategies.h       # Heuristiques de sélection
-    │   └── strategies.cpp     # MRV, Degree, LCV, etc.
-    └── io/                     # Entrée/Sortie
-        ├── solution_writer.h  # Écriture des solutions
+├── main.cpp                    # Main entry point with argument handling
+├── Makefile                    # Compilation configuration
+├── README.md                   # Complete documentation
+├── solve_all.sh                # Batch solving script
+├── trace_solve_all.txt         # Solving logs
+└── src/                        # Modular source code
+    ├── core/                   # Core structures and parameters
+    │   └── params.h            # Solver configuration
+    ├── parser/                 # CSP file parsing
+    │   ├── parser.h            # DIMACS parsing interface
+    │   └── parser.cpp          # Parser implementation
+    ├── solver/                 # Main solver logic
+    │   ├── solver.h            # Main CSPSolver class
+    │   └── solver.cpp          # Backtracking algorithm
+    ├── algorithms/             # Consistency algorithms
+    │   ├── ac3.h               # AC-3 interface
+    │   └── ac3.cpp             # AC-3 implementation
+    ├── strategies/             # Selection strategies
+    │   ├── strategies.h        # Selection heuristics
+    │   └── strategies.cpp      # MRV, Degree, LCV, etc.
+    └── io/                     # Input/Output
+        ├── solution_writer.h   # Solution writing
         ├── solution_writer.cpp
-        └── logo.h             # Interface utilisateur
+        └── logo.h              # User interface
 ```
 
-## Algorithmes implémentés
+## Implemented Algorithms
 
-### Algorithme AC-3 (Arc Consistency)
-L'algorithme AC-3 est implémenté dans `src/algorithms/ac3.cpp` et permet de :
-- **Propagation de contraintes** : Élimine les valeurs inconsistantes des domaines
-- **Détection d'inconsistance** : Identifie rapidement les instances sans solution
-- **Réduction d'espace de recherche** : Diminue le nombre de nœuds à explorer
-- **Application flexible** : Peut être appliqué globalement et/ou à chaque nœud
+### AC-3 Algorithm (Arc Consistency)
 
-**Caractéristiques techniques :**
-- Utilise une file de travail (worklist) pour traiter les arcs
-- Compte le nombre de révisions effectuées pour les statistiques
-- Support du mode verbeux avec traces détaillées
-- Gestion des domaines vides pour détecter l'inconsistance
+The AC-3 algorithm, implemented in `src/algorithms/ac3.cpp`, is a fundamental tool for constraint propagation. Its primary goal is to establish arc consistency, which significantly prunes the search space.
 
-### Stratégies de sélection (src/strategies/)
-La classe `SelectionStrategies` implémente plusieurs heuristiques :
+An arc `(X, Y)` is considered arc-consistent if for every value `x` in the domain of `X`, there exists a corresponding value `y` in the domain of `Y` such that the constraint between `X` and `Y` is satisfied. The AC-3 algorithm systematically enforces arc consistency across all constraints in the problem.
 
-#### Sélection de variables
-- **MRV (Minimum Remaining Values)** : Sélectionne la variable avec le plus petit domaine
-- **Degree Heuristic** : Sélectionne la variable impliquée dans le plus de contraintes
-- **Random** : Sélection aléatoire pour les tests de performance
+- **Constraint Propagation**: It iteratively removes values from variable domains that cannot be part of any valid solution.
+- **Inconsistency Detection**: If any variable's domain becomes empty during propagation, it indicates that the CSP instance has no solution, allowing for early termination.
+- **Search Space Reduction**: By reducing domains, AC-3 decreases the number of nodes the backtracking algorithm needs to explore.
+- **Flexible Application**: It can be applied once at the beginning of the search (initial pruning) and/or at each node of the search tree (maintaining arc consistency).
 
-#### Ordre des valeurs
-- **LCV (Least Constraining Value)** : Privilégie les valeurs qui limitent le moins les autres variables
-- **Lexicographic** : Ordre naturel des valeurs
-- **Random** : Ordre aléatoire des valeurs
+**Technical Features:**
+- Uses a worklist (queue) of arcs to efficiently manage consistency checks.
+- Tracks the number of revisions for statistical analysis.
+- Supports a verbose mode with detailed traces for debugging.
+- Detects empty domains to immediately signal inconsistency.
 
-### Algorithme de backtracking
-Le solveur principal (`src/solver/solver.cpp`) implémente :
-- **Recherche en profondeur** avec backtracking intelligent
-- **Forward checking** : Vérification anticipée des contraintes
-- **Gestion du temps** : Limite de temps configurable
-- **Statistiques détaillées** : Nœuds explorés, backtracks, temps d'exécution
-- **Support multi-solutions** : Trouve toutes les solutions ou s'arrête à la première
+### Selection Strategies (`src/strategies/`)
+
+The `SelectionStrategies` class implements several heuristics to guide the backtracking search, which is critical for performance.
+
+#### Variable Selection (Branching)
+
+- **MRV (Minimum Remaining Values)**: This "fail-first" heuristic selects the variable with the smallest domain. The intuition is to choose the most constrained variable, thereby encountering dead-ends more quickly and pruning the search tree earlier.
+- **Degree Heuristic**: Selects the variable involved in the largest number of constraints with other unassigned variables. This is often used as a tie-breaker for MRV and helps in reducing the branching factor of the search tree.
+- **Random**: Random selection for performance baseline testing.
+
+#### Value Ordering
+
+- **LCV (Least Constraining Value)**: This "succeed-first" heuristic prefers values that rule out the fewest choices for neighboring variables in the constraint graph. It attempts to leave maximum flexibility for subsequent assignments, increasing the likelihood of finding a solution without backtracking.
+- **Lexicographic**: Natural ordering of values.
+- **Random**: Random value ordering.
+
+### Backtracking Algorithm
+
+The main solver (`src/solver/solver.cpp`) implements an intelligent backtracking search:
+
+- **Depth-First Search**: Explores possible assignments in a depth-first manner.
+- **Forward Checking**: A lighter form of propagation. When a value is assigned to a variable, it checks all constraints involving that variable and removes any inconsistent values from the domains of neighboring unassigned variables.
+- **Time Management**: Configurable time limit for the search.
+- **Detailed Statistics**: Tracks explored nodes, backtracks, and execution time.
+- **Multi-solution Support**: Can find all solutions or stop at the first one.
 
 ## Compilation
 
 ```bash
-make                    # Compilation standard
-make clean             # Nettoyage
-make debug             # Compilation en mode debug
-make release           # Compilation optimisée
+make                    # Standard compilation
+make clean              # Clean up build files
+make debug              # Compile in debug mode
+make release            # Compile with optimizations
 ```
 
-## Paramètres de configuration
+## Configuration Parameters
 
-Le solveur utilise la structure `SolverParams` définie dans `src/core/params.h` pour gérer tous les paramètres :
+The solver uses the `SolverParams` struct defined in `src/core/params.h` to manage all settings:
 
-### Limites de temps et solutions
-- `max_time` (défaut: 300) : Temps maximum en secondes
-- `first_solution_only` (défaut: false) : Arrêter à la première solution trouvée
+### Time and Solution Limits
+- `max_time` (default: 300): Maximum time in seconds.
+- `first_solution_only` (default: false): Stop after finding the first solution.
 
-### Stratégies de recherche
-- `var_strategy` (défaut: "mrv") : Stratégie de sélection des variables
-  - `"mrv"` : Minimum Remaining Values (heuristique optimale)
-  - `"degree"` : Sélection par degré de contraintes
-  - `"random"` : Sélection aléatoire
-- `val_strategy` (défaut: "lcv") : Stratégie de sélection des valeurs
-  - `"lcv"` : Least Constraining Value (heuristique optimale)
-  - `"random"` : Ordre aléatoire des valeurs
-  - `"lexicographic"` : Ordre lexicographique
+### Search Strategies
+- `var_strategy` (default: "mrv"): Variable selection strategy.
+  - `"mrv"`: Minimum Remaining Values
+  - `"degree"`: Degree Heuristic
+  - `"random"`: Random selection
+- `val_strategy` (default: "lcv"): Value ordering strategy.
+  - `"lcv"`: Least Constraining Value
+  - `"random"`: Random ordering
+  - `"lexicographic"`: Lexicographic ordering
 
-### Propagation de contraintes
-- `use_ac3` (défaut: true) : Utiliser l'algorithme AC-3
-- `use_forward_checking` (défaut: true) : Utiliser le forward checking
-- `ac3_at_each_node` (défaut: true) : Appliquer AC-3 à chaque nœud de backtracking
+### Constraint Propagation
+- `use_ac3` (default: true): Enable the AC-3 algorithm.
+- `use_forward_checking` (default: true): Enable forward checking.
+- `ac3_at_each_node` (default: true): Apply AC-3 at each node in the backtracking search.
 
-### Contrôle de sortie
-- `verbose` (défaut: false) : Mode verbeux avec traces détaillées
-- `max_depth_trace` (défaut: 5) : Profondeur maximale pour les traces détaillées
-- `max_depth_ac3_trace` (défaut: 3) : Profondeur maximale pour les traces AC-3
-- `show_global_stats_only` (défaut: false) : Afficher seulement les statistiques globales
-- `output_path` (défaut: "") : Chemin de sortie personnalisé
+### Output Control
+- `verbose` (default: false): Verbose mode with detailed traces.
+- `max_depth_trace` (default: 5): Maximum depth for detailed traces.
+- `max_depth_ac3_trace` (default: 3): Maximum depth for AC-3 traces.
+- `show_global_stats_only` (default: false): Display only global statistics.
+- `output_path` (default: ""): Custom output path for solutions.
 
-## Utilisation
+## Usage
 
 ```bash
-./CPSolver <fichier.csp> [options]
+./CPSolver <file.csp> [options]
 
-Options disponibles:
-  -t <time>      Temps maximum en secondes (défaut: 300)
-  -f             Arrêter à la première solution trouvée
-  -v <strategy>  Stratégie de sélection des variables: mrv, degree, random
-  -w <strategy>  Stratégie de sélection des valeurs: lcv, random, lexicographic
-  -a             Désactiver complètement AC-3
-  -c             Désactiver forward checking
-  -n             Désactiver AC-3 à chaque nœud (garder AC-3 initial)
-  -o <path>      Chemin de sortie personnalisé
-  -V             Mode verbeux (traces détaillées)
-  -h             Afficher l'aide complète
+Available options:
+  -t <time>      Maximum time in seconds (default: 300)
+  -f             Stop at the first solution found
+  -v <strategy>  Variable selection strategy: mrv, degree, random
+  -w <strategy>  Value selection strategy: lcv, random, lexicographic
+  -a             Disable AC-3 completely
+  -c             Disable forward checking
+  -n             Disable AC-3 at each node (keep initial AC-3)
+  -o <path>      Custom output path
+  -V             Verbose mode (detailed traces)
+  -h             Display full help
 ```
 
-## Exemples d'utilisation
+## Usage Examples
 
 ```bash
-# Résolution standard avec toutes les optimisations
+# Standard solve with all optimizations
 ./CPSolver ../instances/instances/equality_example.csp
 
-# Première solution seulement (plus rapide)
+# First solution only (faster)
 ./CPSolver ../instances/instances/equality_example.csp -f
 
-# Stratégies personnalisées
+# Custom strategies
 ./CPSolver ../instances/instances/equality_example.csp -v degree -w random
 
-# Désactiver certaines optimisations pour comparaison
+# Disable optimizations for comparison
 ./CPSolver ../instances/instances/equality_example.csp -a -c
 
-# Mode verbeux avec traces détaillées
+# Verbose mode with detailed traces
 ./CPSolver ../instances/instances/equality_example.csp -V
 
-# Limite de temps personnalisée
+# Custom time limit
 ./CPSolver ../instances/instances/equality_example.csp -t 60
 
-# Sortie personnalisée
+# Custom output
 ./CPSolver ../instances/instances/equality_example.csp -o my_solution.sol
 
-# Configuration complète pour tests de performance
+# Full configuration for performance testing
 ./CPSolver ../instances/instances/equality_example.csp -t 120 -v mrv -w lcv -V -o perf_test.sol
 ```
 
-## Format des fichiers
+## File Formats
 
-### Instance CSP (format DIMACS)
+### CSP Instance (DIMACS format)
 ```
-# Commentaires
-4                           # Nombre de variables
+# Comments
+4                           # Number of variables
 
-# Domaines (variable_id min_value max_value)
+# Domains (variable_id min_value max_value)
 0 1 3
 1 1 3
 2 1 3
 3 1 3
 
-4                           # Nombre de contraintes
+4                           # Number of constraints
 
-# Contraintes (var1 var2 (val1,val2) (val3,val4) ...)
+# Constraints (var1 var2 (val1,val2) (val3,val4) ...)
 2 3 (1,1) (2,2) (3,3)
 0 1 (1,1) (2,2) (3,3)
 1 3 (1,1) (2,2) (3,3)
@@ -191,48 +200,47 @@ Options disponibles:
 0=3 1=3 2=3 3=3
 ```
 
-## Architecture détaillée
+## Detailed Architecture
 
-### Composants principaux
+### Main Components
 
-#### 1. Parser (src/parser/)
-- **parser.h/cpp** : Analyse les fichiers CSP au format DIMACS
-- Parse les variables, domaines et contraintes
-- Validation de la syntaxe et détection d'erreurs
-- Structure de données `CSPInstance` pour représenter le problème
+#### 1. Parser (`src/parser/`)
+- **parser.h/cpp**: Parses CSP files in DIMACS format.
+- Parses variables, domains, and constraints.
+- Validates syntax and detects errors.
+- Uses a `CSPInstance` data structure to represent the problem.
 
-#### 2. Solveur principal (src/solver/)
-- **solver.h/cpp** : Classe `CSPSolver` avec l'algorithme de backtracking
-- Gestion de l'assignation des variables
-- Intégration avec AC-3 et forward checking
-- Statistiques de performance (nœuds, backtracks, temps)
+#### 2. Main Solver (`src/solver/`)
+- **solver.h/cpp**: `CSPSolver` class with the backtracking algorithm.
+- Manages variable assignments.
+- Integrates with AC-3 and forward checking.
+- Collects performance statistics (nodes, backtracks, time).
 
-#### 3. Algorithmes de consistance (src/algorithms/)
-- **ac3.h/cpp** : Classe `AC3Algorithm` pour la propagation de contraintes
-- Implémentation de l'algorithme AC-3 avec file de travail
-- Gestion des domaines et détection d'inconsistance
-- Statistiques de révisions et performance
+#### 3. Consistency Algorithms (`src/algorithms/`)
+- **ac3.h/cpp**: `AC3Algorithm` class for constraint propagation.
+- Implements the AC-3 algorithm with a worklist.
+- Manages domains and detects inconsistencies.
+- Tracks revision statistics.
 
-#### 4. Stratégies de sélection (src/strategies/)
-- **strategies.h/cpp** : Classe `SelectionStrategies` pour les heuristiques
-- Implémentation MRV, Degree, LCV et stratégies aléatoires
-- Calcul des conflits et interactions entre variables
-- Génération de nombres aléatoires pour les tests
+#### 4. Selection Strategies (`src/strategies/`)
+- **strategies.h/cpp**: `SelectionStrategies` class for heuristics.
+- Implements MRV, Degree, LCV, and random strategies.
+- Calculates conflicts and interactions between variables.
+- Generates random numbers for testing.
 
-#### 5. Entrée/Sortie (src/io/)
-- **solution_writer.h/cpp** : Écriture des solutions au format texte
-- **logo.h** : Interface utilisateur avec logo et affichage formaté
-- Gestion des fichiers de sortie et création de répertoires
+#### 5. Input/Output (`src/io/`)
+- **solution_writer.h/cpp**: Writes solutions in text format.
+- **logo.h**: User interface with a logo and formatted output.
+- Manages output files and directory creation.
 
-#### 6. Configuration (src/core/)
-- **params.h** : Structure `SolverParams` pour tous les paramètres
-- Valeurs par défaut et validation des options
-- Configuration centralisée du comportement du solveur
+#### 6. Configuration (`src/core/`)
+- **params.h**: `SolverParams` struct for all parameters.
+- Provides default values and validates options.
+- Centralized configuration for solver behavior.
 
 ## Performance
 
-Le solveur est optimisé pour :
-- Trouver toutes les solutions possibles
-- Minimiser l'espace de recherche avec AC-3 et forward checking
-- Gérer efficacement les grandes instances
-- Fournir des statistiques détaillées
+The solver is optimized for:
+- Finding all possible solutions.
+- Minimizing the search space with AC-3 and forward checking.
+- Providing detailed statistics.

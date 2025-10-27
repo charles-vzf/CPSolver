@@ -1,0 +1,242 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage[french]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{geometry}
+\geometry{a4paper, margin=2.5cm}
+
+\title{Rapport du projet CPSolver}
+\author{Esteve Erwan \& Vielzeuf Charles}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Ce rapport présente rapidement le projet CPSolver, un solveur de problèmes de satisfaction de contraintes (CSP).
+Nous décrivons l'architecture du code, présentons les résultats de benchmarks pour le problème des N-Reines et de coloration
+de graphes, et nous nous concentrons sur un choix d'implémentation spécifique au sein du solveur.
+\end{abstract}
+
+
+\tableofcontents
+\newpage
+
+\section{Introduction}
+
+Le projet CPSolver a pour objectif de fournir un cadre robuste et efficace pour la résolution de problèmes de satisfaction 
+de contraintes. Un CSP est défini par un ensemble de variables, un domaine de valeurs pour chaque variable, et un ensemble de contraintes
+qui restreignent les combinaisons de valeurs autorisées.
+
+Ce rapport a pour but de documenter la structure actuelle du solveur, d'évaluer ses performances sur des problèmes classiques
+et de discuter de certaines décisions de conception qui ont été prises.
+
+\section{Description de l'architecture du code}
+
+Le code source du solveur est organisé de manière modulaire pour faciliter la maintenance et l'extension. Le répertoire principal
+`Solver/src` est divisé en plusieurs sous-répertoires :
+\begin{itemize}
+    \item \texttt{core/}: Contient les structures de données fondamentales du solveur, telles que la représentation des variables, des domaines et des contraintes.
+    \item \texttt{parser/}: Responsable de la lecture et de l'analyse des instances de problèmes à partir de fichiers, en les traduisant dans les structures de données internes du solveur.
+    \item \texttt{algorithms/}: Implémente les différents algorithmes de résolution. Actuellement, cela inclut des algorithmes de propagation de contraintes comme AC-3.
+    \item \texttt{solver/}: Orchestre le processus de résolution. Il utilise le parser pour charger un problème, applique les algorithmes choisis et utilise les stratégies pour guider la recherche d'une solution.
+    \item \texttt{strategies/}: Contient les heuristiques de recherche, telles que les stratégies de choix de variables et de valeurs, qui sont cruciales pour l'efficacité de la résolution.
+    \item \texttt{io/}: Gère les entrées/sorties, comme l'affichage des solutions trouvées et des statistiques de résolution.
+\end{itemize}
+
+Cette séparation des préoccupations permet de développer et de tester chaque composant de manière indépendante.
+
+\section{Résultats Expérimentaux}
+
+Nous avons évalué les performances du solveur sur deux problèmes classiques : le problème des N-Reines et la coloration de graphe.
+
+\subsection{Problème des N-Reines}
+
+Le problème des N-Reines consiste à placer N reines sur un échiquier de N×N cases sans qu'aucune reine ne puisse en menacer une autre. Nous avons testé quatre configurations différentes du solveur, en activant ou désactivant l'algorithme de cohérence d'arc AC-3 et la vérification anticipée (forward checking).
+
+Les résultats, incluant le temps d'exécution, le nombre de nœuds explorés dans l'arbre de recherche et le nombre de retours en arrière (backtracks), sont présentés dans le tableau \ref{tab:nqueens_results}.
+
+\begin{longtable}{lrrrr}
+\caption{Résultats du benchmark pour le problème des N-Reines}
+\label{tab:nqueens_results} \\
+\toprule
+n \& config\_name & solving\_time & nodes\_explored & backtracks \\
+\midrule
+\endfirsthead
+\toprule
+n \& config\_name & solving\_time & nodes\_explored & backtracks \\
+\midrule
+\endhead
+4 NoAC\_NoForward & 0.005625 & 96 & 25 \\
+4 NoAC\_Forward & 0.005642 & 21 & 15 \\
+4 AC\_NoForward & 0.009386 & 96 & 25 \\
+4 AC\_Forward & 0.009228 & 16 & 13 \\
+5 NoAC\_NoForward & 0.005602 & 220 & 53 \\
+5 NoAC\_Forward & 0.005025 & 53 & 49 \\
+5 AC\_NoForward & 0.003000 & 220 & 53 \\
+5 AC\_Forward & 0.002000 & 49 & 49 \\
+6 NoAC\_NoForward & 0.003000 & 894 & 152 \\
+6 NoAC\_Forward & 0.007463 & 118 & 82 \\
+6 AC\_NoForward & 0.019000 & 894 & 152 \\
+6 AC\_Forward & 0.006000 & 108 & 78 \\
+7 NoAC\_NoForward & 0.014000 & 3584 & 551 \\
+7 NoAC\_Forward & 0.002000 & 393 & 325 \\
+7 AC\_NoForward & 0.089000 & 3584 & 551 \\
+7 AC\_Forward & 0.035000 & 379 & 325 \\
+8 NoAC\_NoForward & 0.082000 & 15720 & 2056 \\
+8 NoAC\_Forward & 0.013000 & 1360 & 1068 \\
+8 AC\_NoForward & 0.656000 & 15720 & 2056 \\
+8 AC\_Forward & 0.166000 & 1210 & 1008 \\
+9 NoAC\_NoForward & 0.493000 & 72378 & 8393 \\
+9 NoAC\_Forward & 0.062000 & 5399 & 4273 \\
+9 AC\_NoForward & 3.483000 & 72378 & 8393 \\
+9 AC\_Forward & 1.005000 & 4837 & 4037 \\
+10 NoAC\_NoForward & 3.578000 & 348150 & 35538 \\
+10 NoAC\_Forward & 0.416000 & 19744 & 14752 \\
+10 AC\_NoForward & 26.259000 & 348150 & 35538 \\
+10 AC\_Forward & 5.207000 & 17222 & 13780 \\
+\bottomrule
+\end{longtable}
+
+La figure \ref{fig:nodes_nqueens} illustre la croissance du nombre de nœuds explorés en fonction de la taille du problème pour les différentes configurations.
+
+\begin{figure}[h!]
+    \centering
+    % La figure doit être placée dans un dossier 'figures'
+    \includegraphics[width=0.8\textwidth]{../figures/nodes_nqueens.png}
+    \caption{Nombre de nœuds explorés pour le problème des N-Reines.}
+    \label{fig:nodes_nqueens}
+\end{figure}
+
+\subsubsection{Statistiques sur les Nœuds Explorés}
+Une analyse plus approfondie des nœuds explorés révèle des tendances intéressantes.
+\begin{itemize}
+    \item \textbf{Globalement :}
+    \begin{itemize}
+        \item Minimum: 16
+        \item Maximum: 348,150
+        \item Moyenne: 33,321
+        \item Médiane: 1,052
+    \end{itemize}
+    \item \textbf{Par configuration :}
+    \begin{itemize}
+        \item \texttt{NoAC\_NoForward}: Nœuds moyens: 63,006, Temps moyen: 0.597s
+        \item \texttt{NoAC\_Forward}: Nœuds moyens: 3,870, Temps moyen: 0.073s
+        \item \texttt{AC\_NoForward}: Nœuds moyens: 63,006, Temps moyen: 4.360s
+        \item \texttt{AC\_Forward}: Nœuds moyens: 3,403, Temps moyen: 0.919s
+    \end{itemize}
+\end{itemize}
+
+On observe que les stratégies de "Forward checking" et AC-3 réduisent drastiquement le nombre de nœuds explorés, ce qui est attendu. Cependant, le coût de l'AC-3 peut parfois entraîner un temps de résolution plus élevé pour les petits problèmes.
+
+\subsection{Problème de Coloration de Graphe}
+
+Le problème de coloration de graphe consiste à assigner une couleur à chaque sommet d'un graphe de telle sorte que deux sommets adjacents n'aient jamais la même couleur, en utilisant un nombre minimal de couleurs.
+
+\begin{figure}[h!]
+    \centering
+    % La figure doit être placée dans un dossier 'figures'
+    \includegraphics[width=0.8\textwidth]{../figures/coloration.png}
+    \caption{Performance du solveur sur un problème de coloration de graphe.}
+    \label{fig:coloration_graph}
+\end{figure}
+
+\subsubsection{Benchmark de coloration}
+
+Le tableau \ref{tab:coloration_bench} synthétise les résultats d'un benchmark du solveur sur un ensemble d'instances de coloration (colonne "k" correspond au nombre de couleurs testé). Les métriques rapportées sont : le statut du run, le nombre de solutions trouvées, le temps de résolution en millisecondes et le nombre de nœuds explorés.
+
+\begin{longtable}{l r l r r r}
+\caption{Résultats du benchmark pour la coloration de graphe}
+\label{tab:coloration_bench} \\
+\toprule
+Instance & k & Statut & Solutions & Temps (ms) & Nœuds \\
+\midrule
+\endfirsthead
+\toprule
+Instance & k & Statut & Solutions & Temps (ms) & Nœuds \\
+\midrule
+\endhead
+anna & 11 & First solution found & 1 & 1445 & 138 \\
+david & 11 & First solution found & 1 & 537 & 87 \\
+games120 & 9 & First solution found & 1 & 2091 & 120 \\
+huck & 11 & First solution found & 1 & 370 & 74 \\
+jean & 10 & First solution found & 1 & 257 & 80 \\
+miles250 & 8 & First solution found & 1 & 718 & 128 \\
+myciel3 & 4 & First solution found & 1 & 0 & 11 \\
+myciel4 & 5 & First solution found & 1 & 2 & 23 \\
+myciel5 & 6 & First solution found & 1 & 21 & 47 \\
+myciel6 & 7 & First solution found & 1 & 333 & 95 \\
+\bottomrule
+\end{longtable}
+\subsection{Problème de Job Shop}
+Le problème de Job Shop Scheduling (JSSP) consiste à planifier un ensemble de jobs composés chacun d’une séquence ordonnée d’opérations, de manière à respecter les contraintes de précédence et de capacité des machines. Chaque opération doit être exécutée sur une machine donnée pendant une durée fixe, et chaque machine ne peut traiter qu’une seule opération à la fois. L’objectif classique est de déterminer s’il existe une planification qui termine toutes les opérations avant une date limite donnée, ou de minimiser le temps total d’exécution (makespan).
+
+En programmation par contrainte (CSP), chaque opération est modélisée par une variable représentant sa date de début, dont le domaine est l’ensemble des instants temporels possibles. Les contraintes binaires assurent :
+\begin{itemize}
+
+\item les relations d’ordre entre opérations d’un même job (chaque opération doit commencer après la fin de la précédente).
+
+\item les contraintes de non-chevauchement entre opérations partageant une même machine (une seule opération active à la fois).
+
+\end{itemize}
+Cette modélisation permet d’utiliser un solveur de contraintes générique pour explorer l’espace des affectations temporelles et vérifier la faisabilité d’un ordonnancement sous les contraintes imposées.
+\subsubsection{Benchmark du JSSP}
+Les résultats du benchmark pour le problème JSSP sur l'instance ft06 avec différentes valeurs de K (horizon temporel, qui est aussi la valeur maximal du Makespan à trouver) sont présentés dans le tableau ci-dessous. Une solution minimum existe pour ce problème pour K = 55.
+\begin{longtable}{r l r r r}
+\caption{Benchmark ft06 — K, statut, solutions, temps (s), nœuds} \\
+\toprule
+K & Statut & Solutions & Temps (s) & Nœuds \\
+\midrule
+\endfirsthead
+\toprule
+K & Statut & Solutions & Temps (s) & Nœuds \\
+\midrule
+\endhead
+58 & Timeout & 0 & 600 & 1022412 \\
+58 & Timeout & 0 & 600 & 1021032 \\
+61 & Timeout & 0 & 600 & 1020618 \\
+64 & First solution found & 1 & 30.252 & 103011 \\
+67 & First solution found & 1 & 2.359 & 1103 \\
+70 & First solution found & 1 & 2.641 & 1173 \\
+\bottomrule
+\end{longtable}
+
+Quelques observations :
+\begin{itemize}
+    \item Pour K = 58 et K = 61, le solveur n'a pas réussi à trouver une solution dans la limite de temps de 600 secondes (bien qu'une solution existe).
+    \item À partir de K = 64, le solveur a pu trouver des solutions, avec un temps de résolution significativement réduit à mesure que K augmente.
+    \item Le nombre de nœuds explorés diminue également avec l'augmentation de K, suggérant que des horizons plus longs facilitent la recherche d'une solution faisable.
+    \item À l'inverse du temps de recherche, la taille des instances grandit avec les valeurs de K.
+\end{itemize}
+\section{Focus sur un Détail d'Implémentation : l'Algorithme AC-3}
+
+Une partie essentielle du solveur est son implémentation de l'algorithme de cohérence d'arc AC-3, qui se trouve dans `src/algorithms/ac3.cpp`. AC-3 est un algorithme de propagation de contraintes qui filtre les domaines des variables en supprimant les valeurs qui ne peuvent pas faire partie d'une solution.
+
+\subsection{La structure de l'algorithme}
+L'implémentation repose sur une file de travail (`worklist`) qui contient les "arcs" à vérifier. Un arc représente une relation de contrainte entre deux variables (par exemple, de $V_i$ à $V_j$). L'algorithme traite les arcs de la file un par un.
+
+Pour chaque arc $(V_i, V_j)$, la fonction `revise` est appelée. Son rôle est de s'assurer que pour chaque valeur dans le domaine de $V_i$, il existe au moins une valeur "support" dans le domaine de $V_j$ qui satisfait la contrainte entre les deux variables. Si une valeur du domaine de $V_i$ n'a pas de support, elle est supprimée.
+
+\subsection{Un choix d'implémentation original}
+
+Un aspect intéressant de notre implémentation est la manière dont les contraintes sont vérifiées dans la fonction `isConsistent`. Plutôt que d'avoir des prédicats codés en dur pour différents types de contraintes (par exemple, `!=`, `<`, `AllDifferent`), le solveur utilise une approche basée sur des listes de paires autorisées.
+
+Chaque contrainte est définie par un ensemble de tuples de valeurs qui la satisfont. La fonction `isConsistent` vérifie simplement si une assignation de valeurs donnée `(val1, val2)` pour les variables `(var1, var2)` est présente dans la liste des paires autorisées pour la contrainte liant ces deux variables.
+
+\subsubsection{Avantages et Inconvénients}
+\begin{itemize}
+    \item \textbf{Avantages :} Cette méthode est extrêmement flexible et générique. Elle permet de définir n'importe quel type de contrainte binaire sans avoir à modifier le code du solveur. Il suffit de fournir la liste des tuples valides lors de la définition du problème.
+    \item \textbf{Inconvénients :} Pour les contraintes simples (comme $V_i \neq V_j$), cette approche peut être moins efficace en termes de mémoire et de temps de calcul que l'utilisation d'un prédicat direct. La liste des paires autorisées peut devenir très grande si les domaines des variables sont larges.
+\end{itemize}
+
+Ce choix de conception privilégie donc la généricité et l'extensibilité du solveur, au prix potentiel d'une performance sub-optimale pour certains types de contraintes très structurées.
+
+\section{Conclusion}
+
+Le CPSolver est un outil puissant doté d'une architecture modulaire et extensible. Les benchmarks montrent des performances prometteuses, bien que des optimisations soient possibles, notamment en ce qui concerne la gestion des contraintes. Les choix de conception, comme l'utilisation de listes de paires autorisées pour la vérification de la cohérence, rendent le solveur très flexible. Les prochaines étapes pourraient inclure l'implémentation de prédicats de contraintes plus efficaces pour les cas courants et l'ajout de nouvelles heuristiques de recherche.
+
+\end{document}

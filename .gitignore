@@ -1,5 +1,8 @@
 # Virtual environment activation script
 activate_venv.sh
+.cursorignore
+/solutions/solutions/
+trace_solve_all.txt
 
 # C++ compilation files and directories
 obj/
@@ -54,3 +57,28 @@ logs/
 # Temporary files
 *.tmp
 *.temp
+
+# LaTeX files
+*.aux
+*.log
+*.pdf
+*.out
+*.toc
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+*.bbl
+*.blg
+*.nav
+*.snm
+*.vrb
+
+# Large directories
+instances/
+papers/
+# Exclude solutions directory but allow specific file types
+solutions/*
+!solutions/*.ipynb
+!solutions/*.csv
+!solutions/*.txt
+!solutions/*.md
