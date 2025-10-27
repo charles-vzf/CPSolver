@@ -61,7 +61,7 @@ logs/
 # LaTeX files
 *.aux
 *.log
-*.pdf
+# Report/rapport.pdf
 *.out
 *.toc
 *.fdb_latexmk
@@ -75,7 +75,6 @@ logs/
 
 # Large directories
 instances/
-papers/
 # Exclude solutions directory but allow specific file types
 solutions/*
 !solutions/*.ipynb

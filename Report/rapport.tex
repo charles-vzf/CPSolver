@@ -19,7 +19,7 @@
 \begin{abstract}
 Ce rapport présente rapidement le projet CPSolver, un solveur de problèmes de satisfaction de contraintes (CSP).
 Nous décrivons l'architecture du code, présentons les résultats de benchmarks pour le problème des N-Reines et de coloration
-de graphes, et nous nous concentrons sur un choix d'implémentation spécifique au sein du solveur.
+de graphes, et nous nous concentrons ensuite sur la résolution d'un problème plus spécifique : le problème de Job Shop Scheduling.
 \end{abstract}
 
 
@@ -131,7 +131,14 @@ Une analyse plus approfondie des nœuds explorés révèle des tendances intére
     \end{itemize}
 \end{itemize}
 
-On observe que les stratégies de "Forward checking" et AC-3 réduisent drastiquement le nombre de nœuds explorés, ce qui est attendu. Cependant, le coût de l'AC-3 peut parfois entraîner un temps de résolution plus élevé pour les petits problèmes.
+On observe que les stratégies de "Forward checking" et AC-3 réduisent drastiquement le nombre de nœuds explorés (pas dans le cas des 
+N-Reines pour AC-3), ce qui est attendu. Il reste efficace sur le problème de coloration de graphe, le coût de l'AC-3 peut
+parfois entraîner un temps de résolution plus élevé pour les petits problèmes. Les strategies de branchement sont également 
+intéressantes pour améliorer l'efficacité de la recherche : parmi les heuristiques de sélection de variables, le solveur implémente 
+la heuristique MRV (Minimum Remaining Values) pour choisir la variable avec le plus petit domaine restant, ainsi que des heuristiques 
+basées sur le degré dans le graphe de contraintes et une sélection aléatoire. Pour l'ordonnancement des valeurs, le solveur propose 
+l'heuristique LCV (Least Constraining Value) qui privilégie les valeurs causant le moins de conflits, ainsi qu'un ordre lexicographique 
+ou aléatoire.
 
 \subsection{Problème de Coloration de Graphe}
 
@@ -212,31 +219,14 @@ Quelques observations :
     \item Le nombre de nœuds explorés diminue également avec l'augmentation de K, suggérant que des horizons plus longs facilitent la recherche d'une solution faisable.
     \item À l'inverse du temps de recherche, la taille des instances grandit avec les valeurs de K.
 \end{itemize}
-\section{Focus sur un Détail d'Implémentation : l'Algorithme AC-3}
 
-Une partie essentielle du solveur est son implémentation de l'algorithme de cohérence d'arc AC-3, qui se trouve dans `src/algorithms/ac3.cpp`. AC-3 est un algorithme de propagation de contraintes qui filtre les domaines des variables en supprimant les valeurs qui ne peuvent pas faire partie d'une solution.
-
-\subsection{La structure de l'algorithme}
-L'implémentation repose sur une file de travail (`worklist`) qui contient les "arcs" à vérifier. Un arc représente une relation de contrainte entre deux variables (par exemple, de $V_i$ à $V_j$). L'algorithme traite les arcs de la file un par un.
-
-Pour chaque arc $(V_i, V_j)$, la fonction `revise` est appelée. Son rôle est de s'assurer que pour chaque valeur dans le domaine de $V_i$, il existe au moins une valeur "support" dans le domaine de $V_j$ qui satisfait la contrainte entre les deux variables. Si une valeur du domaine de $V_i$ n'a pas de support, elle est supprimée.
-
-\subsection{Un choix d'implémentation original}
-
-Un aspect intéressant de notre implémentation est la manière dont les contraintes sont vérifiées dans la fonction `isConsistent`. Plutôt que d'avoir des prédicats codés en dur pour différents types de contraintes (par exemple, `!=`, `<`, `AllDifferent`), le solveur utilise une approche basée sur des listes de paires autorisées.
-
-Chaque contrainte est définie par un ensemble de tuples de valeurs qui la satisfont. La fonction `isConsistent` vérifie simplement si une assignation de valeurs donnée `(val1, val2)` pour les variables `(var1, var2)` est présente dans la liste des paires autorisées pour la contrainte liant ces deux variables.
-
-\subsubsection{Avantages et Inconvénients}
-\begin{itemize}
-    \item \textbf{Avantages :} Cette méthode est extrêmement flexible et générique. Elle permet de définir n'importe quel type de contrainte binaire sans avoir à modifier le code du solveur. Il suffit de fournir la liste des tuples valides lors de la définition du problème.
-    \item \textbf{Inconvénients :} Pour les contraintes simples (comme $V_i \neq V_j$), cette approche peut être moins efficace en termes de mémoire et de temps de calcul que l'utilisation d'un prédicat direct. La liste des paires autorisées peut devenir très grande si les domaines des variables sont larges.
-\end{itemize}
-
-Ce choix de conception privilégie donc la généricité et l'extensibilité du solveur, au prix potentiel d'une performance sub-optimale pour certains types de contraintes très structurées.
 
 \section{Conclusion}
 
-Le CPSolver est un outil puissant doté d'une architecture modulaire et extensible. Les benchmarks montrent des performances prometteuses, bien que des optimisations soient possibles, notamment en ce qui concerne la gestion des contraintes. Les choix de conception, comme l'utilisation de listes de paires autorisées pour la vérification de la cohérence, rendent le solveur très flexible. Les prochaines étapes pourraient inclure l'implémentation de prédicats de contraintes plus efficaces pour les cas courants et l'ajout de nouvelles heuristiques de recherche.
+Le CSP solver écris permet de résoudre des instances assez simples et possède une architecture modulaire extensible.
+Les benchmarks montrent des tendances interessantes, bien que des optimisations soient possibles, notamment en ce qui concerne
+la gestion des contraintes. Les choix de conception, comme l'utilisation de listes de paires autorisées pour la vérification de
+la cohérence, rendent le solveur très flexible. Les prochaines étapes pourraient inclure l'implémentation de prédicats
+de contraintes plus efficaces pour les cas courants et l'ajout de nouvelles heuristiques de recherche.
 
 \end{document}
