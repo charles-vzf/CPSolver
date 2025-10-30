@@ -1,0 +1,191 @@
+\documentclass[11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{seahorse}
+
+\usepackage[french]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multicol}
+\usepackage{caption}
+\usepackage{hyperref}
+
+\title[CPSolver — Soutenance]{CPSolver \\ Présentation du projet}
+\author{Esteve Erwan \and Vielzeuf Charles}
+\institute{Projet CPSolver}
+\date{\today}
+
+\begin{document}
+
+% Title
+\begin{frame}
+  \titlepage
+  \note{Présentez-vous brièvement (nom, rôle) et annoncez l'objectif : 10 minutes pour exposer le projet CPSolver, architecture et résultats principaux.}
+\end{frame}
+
+% Plan
+\begin{frame}{Plan}
+  \tableofcontents[hideallsubsections]
+  \note{Annonce rapide : architecture, benchmarks (N-Reines, coloration, JSSP), observations et conclusion.}
+\end{frame}
+
+\section{Contexte \& objectif}
+\begin{frame}{Contexte et objectif}
+  \begin{itemize}
+    \item Résoudre des \textbf{CSP} (variables, domaines, contraintes).
+    \item Objectif : cadre modulaire, performant et extensible pour résoudre des instances variées.
+    \item Cas étudiés : \textbf{N-Reines}, \textbf{Coloration de graphique}, \textbf{Job Shop Scheduling (JSSP)}.
+  \end{itemize}
+  \note{Expliquez en 20–30s ce qu'est un CSP et la finalité du projet.}
+\end{frame}
+
+\section{Architecture}
+\begin{frame}{Architecture du code}
+  \begin{itemize}
+    \item \texttt{core/} : variables, domaines, contraintes
+    \item \texttt{parser/} : lecture d'instances
+    \item \texttt{algorithms/} : propagation (ex. AC-3), routines
+    \item \texttt{solver/} : orchestration de la recherche
+    \item \texttt{strategies/} : heuristiques (MRV, degré, LCV, etc.)
+    \item \texttt{io/} : sorties, statistiques
+  \end{itemize}
+  \note{Insistez sur la modularité : facilite tests unitaires et extensions (nouveaux algos, heuristiques).}
+\end{frame}
+
+\begin{frame}{Heuristiques et techniques implémentées}
+  \begin{itemize}
+    \item Propagation : \textbf{AC-3}
+    \item Pruning : \textbf{Forward checking}
+    \item Choix de variable : \textbf{MRV}, heuristique de degré, aléatoire
+    \item Choix de valeur : \textbf{LCV}, ordre lexicographique, aléatoire
+  \end{itemize}
+  \note{Donnez un exemple rapide : MRV = choisir variable au plus petit domaine.}
+\end{frame}
+
+\section{Benchmarks — N-Reines}
+\begin{frame}{N-Reines — protocole}
+  \begin{itemize}
+    \item Comparaison de 4 configurations : NoAC\_NoForward, NoAC\_Forward, AC\_NoForward, AC\_Forward.
+    \item Mesures : temps, nœuds explorés, backtracks.
+    \item Instances : n = 4..10.
+  \end{itemize}
+  \note{Expliquez que l'objectif est de voir l'impact d'AC-3 et du Forward checking.}
+\end{frame}
+
+\begin{frame}{N-Reines — exemples de résultats (extraits)}
+  \centering
+  \begin{tabular}{lrrr}
+    \toprule
+    Config & Temps (s) & Nœuds & Backtracks \\
+    \midrule
+    8 NoAC\_NoForward & 0.082 & 15720 & 2056 \\
+    8 NoAC\_Forward & 0.013 & 1360 & 1068 \\
+    8 AC\_NoForward & 0.656 & 15720 & 2056 \\
+    8 AC\_Forward & 0.166 & 1210 & 1008 \\
+    \bottomrule
+  \end{tabular}
+  \note{Montrer que Forward checking réduit fortement les nœuds ; AC-3 peut coûter cher sur petits problèmes.}
+\end{frame}
+
+\begin{frame}{N-Reines — observations}
+  \begin{itemize}
+    \item Forward checking réduit drastiquement les nœuds explorés.
+    \item AC-3 aide parfois mais son coût peut dominer pour petits N.
+    \item Statistiques globales : min nœuds = 16, max = 348150, médiane ≈ 1052.
+  \end{itemize}
+  \note{Donner 30s d'interprétation : trade-off propagation vs coût de maintenance.}
+\end{frame}
+
+\section{Benchmarks — Coloration}
+\begin{frame}{Coloration de graphe — protocole}
+  \begin{itemize}
+    \item Instances classiques (ex. myciel*, games120, anna, david,...)
+    \item Test sur différentes valeurs de \(k\) (nombre de couleurs)
+    \item Mesures : statut, solutions, temps (ms), nœuds
+  \end{itemize}
+  \note{Présenter brièvement l'instance myciel etc. Pas besoin d'entrer dans les graphes.}
+\end{frame}
+
+\begin{frame}{Coloration — extrait de résultats}
+  \centering
+  \begin{tabular}{lrrr}
+    \toprule
+    Instance & k & Temps (ms) & Nœuds \\
+    \midrule
+    anna & 11 & 1445 & 138 \\
+    david & 11 & 537  & 87 \\
+    myciel5 & 6 & 21 & 47 \\
+    myciel6 & 7 & 333 & 95 \\
+    \bottomrule
+  \end{tabular}
+  \note{Montrer que le solveur trouve rapidement les premières solutions sur ces instances.}
+\end{frame}
+
+\section{Benchmarks — Job Shop (JSSP)}
+\begin{frame}{JSSP — modélisation}
+  \begin{itemize}
+    \item Variable par opération = date de début.
+    \item Contraintes de précédence (opérations d'un job).
+    \item Contraintes de non-chevauchement sur machines.
+    \item Objectif habituel : trouver faisabilité pour un horizon K ou minimiser le makespan.
+  \end{itemize}
+  \note{Expliquez en 20s la modélisation CSP pour JSSP.}
+\end{frame}
+
+\begin{frame}{JSSP — benchmark (instance ft06)}
+  \centering
+  \begin{tabular}{rrrr}
+    \toprule
+    K & Statut & Temps (s) & Nœuds \\
+    \midrule
+    58 & Timeout & 600 & 1,021,412 \\
+    61 & Timeout & 600 & 1,020,618 \\
+    64 & First sol. & 30.252 & 103,011 \\
+    67 & First sol. & 2.359 & 1,103 \\
+    70 & First sol. & 2.641 & 1,173 \\
+    \bottomrule
+  \end{tabular}
+  \note{Souligner : pour des horizons plus larges, le solveur trouve plus vite une solution — horizon serré plus difficile.}
+\end{frame}
+
+\section{Discussion}
+\begin{frame}{Discussion — points clés}
+  \begin{itemize}
+    \item Trade-off propagation vs coût (AC-3 utile mais pas systématiquement).
+    \item Heuristiques (MRV, LCV) importantes pour réduire l'arbre de recherche.
+    \item Modularité permet d'expérimenter rapidement de nouvelles stratégies.
+    \item Optimisations futures : contraintes globales spécialisées, meilleure gestion des domaines temporels.
+  \end{itemize}
+  \note{Présentez 3 priorités d'évolution si on vous pose la question : prédicats efficaces, parallélisation, profiling.}
+\end{frame}
+
+\section{Conclusion}
+\begin{frame}{Conclusion}
+  \begin{itemize}
+    \item CPSolver : implémentation modulaire, performante sur petites et moyennes instances.
+    \item Prochaines étapes : contraintes globales, nouvelles heuristiques et optimisation des coûts de propagation.
+  \end{itemize}
+  \note{Conclure en 20s — rappeler la contribution et les perspectives.}
+\end{frame}
+
+\begin{frame}{Questions}
+  \centering
+  \Large Merci — questions ?
+  \note{Ouvrir la séance de questions. Préparez éventuellement un slide « backup » avec plus de tableaux ou des extraits de code si on vous demande des détails techniques.}
+\end{frame}
+
+% % (optionnel) slide de backup : commandes de compilation
+% \begin{frame}[fragile]{Compilation}
+%   \begin{verbatim}
+%   pdflatex presentation.tex
+%   bibtex (si bibliographie)
+%   pdflatex presentation.tex
+%   pdflatex presentation.tex
+%   \end{verbatim}
+%   \note{Indiquer comment inclure les figures : placer les images dans un dossier 'figures' relatif et remplacer les \verb|\includegraphics| dans les slides si nécessaire.}
+% \end{frame}
+
+\end{document}
