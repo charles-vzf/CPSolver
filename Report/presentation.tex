@@ -27,10 +27,6 @@
 \end{frame}
 
 % Plan
-\begin{frame}{Plan}
-  \tableofcontents[hideallsubsections]
-  \note{Annonce rapide : architecture, benchmarks (N-Reines, coloration, JSSP), observations et conclusion.}
-\end{frame}
 
 \section{Contexte \& objectif}
 \begin{frame}{Contexte et objectif}
@@ -89,7 +85,15 @@
   \end{tabular}
   \note{Montrer que Forward checking réduit fortement les nœuds ; AC-3 peut coûter cher sur petits problèmes.}
 \end{frame}
-
+\begin{frame}{N-Reines — nœuds explorés}
+  \centering
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{../figures/nodes_nqueens.png}
+    \label{fig:nodes_nqueens}
+  \end{figure}
+  \note{Présentez cette courbe : comparer configurations (AC vs Forward) et discuter des tendances observées.}
+\end{frame}
 \begin{frame}{N-Reines — observations}
   \begin{itemize}
     \item Forward checking réduit drastiquement les nœuds explorés.
@@ -123,7 +127,16 @@
   \end{tabular}
   \note{Montrer que le solveur trouve rapidement les premières solutions sur ces instances.}
 \end{frame}
-
+\begin{frame}{Coloration — visualisation}
+  \centering
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{../figures/coloration.png}
+    \vspace{2mm}
+    \label{fig:coloration_graph}
+  \end{figure}
+  \note{Expliquez en 20–30s ce que montre la figure : comparaison des configurations, tendances et points saillants.}
+\end{frame}
 \section{Benchmarks — Job Shop (JSSP)}
 \begin{frame}{JSSP — modélisation}
   \begin{itemize}
