@@ -15,14 +15,14 @@
 # ┌─────────────────────────────────────────────────────────────────────────────┐
 # │                              SOLVER STATISTICS                              │
 # └─────────────────────────────────────────────────────────────────────────────┘
-# Generated on: 2025-10-20 21:18:25
+# Generated on: 2025-11-04 07:23:34
 # Variables: 10
 # Constraints: 135
 # Domain size: 10
 # Solutions found: 724
 # Resolution status: All solutions found
 # Nodes explored: 348150
-# Solving time: 12.3s
+# Solving time: 36.5s
 # Variable strategy: mrv
 # Value strategy: lcv
 # AC-3: Enabled
